@@ -166,11 +166,13 @@ Wait a few seconds after `up` so the backend can create the tables.
 `pnpm db:seed` can be run repeatedly without creating duplicates.
 
 ### Seeded users
-| Name            | Email                  | Role      |
-|-----------------|------------------------|-----------|
-| Alex Admin      | admin@example.test     | Admin     |
-| Casey Clinician | clinician@example.test | Clinician |
-| Sam Scheduler   | scheduler@example.test | Scheduler |
+
+| Name              | Email                    | Role       |
+|-------------------|--------------------------|------------|
+| Olivia Originator | originator@example.test  | Originator |
+| Dan Dom           | dom@example.test         | Dom        |
+| Oscar Operator    | operator@example.test    | Operator   |
+
 
 Seed users use a placeholder password hash and cannot log in yet.
 

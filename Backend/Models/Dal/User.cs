@@ -1,6 +1,6 @@
 namespace Backend.Models.Entities;
 
-public enum Role { Admin, Clinician, Scheduler }
+public enum Role { Originator, Dom, Operator  }
 
 // MODEL - ENTITY (MVCS):
 // Represents database tables managed and mapped by EF Core to PostgreSQL

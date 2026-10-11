@@ -11,7 +11,8 @@ namespace Backend.Tests;
 public class SignatureServiceTests
 {
     // The service keeps its data in static lists, so every test uses its own restriction id.
-    private static SignatureService CreateService() => new(null!);
+    // xUnit creates a new test class instance per test, so each test gets a fresh service.
+    private readonly SignatureService _service = new(null!);
 
     [Fact]
     public void Signature_HasNoPublicSetters()
@@ -31,12 +32,11 @@ public class SignatureServiceTests
     [Fact]
     public void Sign_RecordsSignerRoleVersionAndServerTimestamp()
     {
-        var service = CreateService();
         var restrictionVersionId = Guid.NewGuid();
-        var required = service.CreateRequiredSignatures(restrictionVersionId).First();
+        var required = _service.CreateRequiredSignatures(restrictionVersionId).First();
         var before = DateTime.UtcNow;
 
-        var signature = service.Sign(required.Id, required.SigneeId);
+        var signature = _service.Sign(required.Id, required.SigneeId);
 
         Assert.Equal(required.SigneeId, signature.SigneeId);
         Assert.Equal(restrictionVersionId, signature.OperationalRestrictionId);
@@ -47,44 +47,40 @@ public class SignatureServiceTests
     [Fact]
     public void Sign_ByAnotherUser_Throws()
     {
-        var service = CreateService();
-        var required = service.CreateRequiredSignatures(Guid.NewGuid()).First();
+        var required = _service.CreateRequiredSignatures(Guid.NewGuid()).First();
 
-        Assert.Throws<NotRequiredSignerException>(() => service.Sign(required.Id, Guid.NewGuid()));
+        Assert.Throws<NotRequiredSignerException>(() => _service.Sign(required.Id, Guid.NewGuid()));
     }
 
     [Fact]
     public void Sign_Twice_Throws()
     {
-        var service = CreateService();
-        var required = service.CreateRequiredSignatures(Guid.NewGuid()).First();
-        service.Sign(required.Id, required.SigneeId);
+        var required = _service.CreateRequiredSignatures(Guid.NewGuid()).First();
+        _service.Sign(required.Id, required.SigneeId);
 
-        Assert.Throws<RequiresSignatureNotSignableException>(() => service.Sign(required.Id, required.SigneeId));
+        Assert.Throws<RequiresSignatureNotSignableException>(() => _service.Sign(required.Id, required.SigneeId));
     }
 
     [Fact]
     public void InvalidateRequiredSignatures_InvalidatesSignedAndBlocksFurtherSigning()
     {
-        var service = CreateService();
         var restrictionVersionId = Guid.NewGuid();
-        var requiredSignatures = service.CreateRequiredSignatures(restrictionVersionId);
-        var signature = service.Sign(requiredSignatures[0].Id, requiredSignatures[0].SigneeId);
-        Assert.True(service.IsSignatureValid(signature.Id));
+        var requiredSignatures = _service.CreateRequiredSignatures(restrictionVersionId);
+        var signature = _service.Sign(requiredSignatures[0].Id, requiredSignatures[0].SigneeId);
+        Assert.True(_service.IsSignatureValid(signature.Id));
 
-        service.InvalidateRequiredSignatures(restrictionVersionId);
+        _service.InvalidateRequiredSignatures(restrictionVersionId);
 
-        Assert.False(service.IsSignatureValid(signature.Id));
+        Assert.False(_service.IsSignatureValid(signature.Id));
         Assert.Throws<RequiresSignatureNotSignableException>(() =>
-            service.Sign(requiredSignatures[1].Id, requiredSignatures[1].SigneeId));
+            _service.Sign(requiredSignatures[1].Id, requiredSignatures[1].SigneeId));
     }
 
     [Fact]
     public void CreateRequiredSignatures_SkipsUsersOnHolidayAndStartsUnsigned()
     {
-        var service = CreateService();
 
-        var required = service.CreateRequiredSignatures(Guid.NewGuid());
+        var required = _service.CreateRequiredSignatures(Guid.NewGuid());
 
         Assert.Equal(4, required.Count);
         Assert.All(required, x => Assert.Equal(RequiresSignatureStatus.Unsigned, x.RequiresSignatureStatus));

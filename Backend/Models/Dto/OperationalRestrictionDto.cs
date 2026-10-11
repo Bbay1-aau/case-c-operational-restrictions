@@ -8,7 +8,7 @@ public class OperationalRestrictionDto
   public Guid Id { get; set; }
   public Guid OriginatorUserId { get; set; }
   public Guid CreatedBy { get; set; }
-  public RestrictionState State { get; set; }
+  public RestrictionStatus Status { get; set; }
   public DateTime StartDate { get; set; }
   public DateTime EndDate { get; set; }
   public DateTime CreatedAt { get; set; }
@@ -19,9 +19,9 @@ public class OperationalRestrictionDto
     new()
     {
       Id = operationalRestriction.Id,
-      OriginatorUserId = operationalRestriction.OriginatorUserId,
+      OriginatorUserId = operationalRestriction.Originator,
       CreatedBy = operationalRestriction.CreatedBy,
-      State = operationalRestriction.State,
+      Status = operationalRestriction.Status,
       StartDate = operationalRestriction.StartDate,
       EndDate = operationalRestriction.EndDate,
       CreatedAt = operationalRestriction.CreatedAt,

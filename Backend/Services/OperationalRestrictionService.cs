@@ -27,9 +27,9 @@ public class OperationalRestrictionService(
     var restriction = new OperationalRestriction
     {
       Id = Guid.NewGuid(),
-      OriginatorUserId = request.CreatedBy,
+      Originator = request.CreatedBy,
       CreatedBy = request.CreatedBy,
-      State = RestrictionState.Draft,
+      Status = RestrictionStatus.Draft,
       StartDate = request.StartDate,
       EndDate = request.EndDate,
       CreatedAt = DateTime.UtcNow,
@@ -88,9 +88,9 @@ public class OperationalRestrictionService(
       originalRestriction.OriginalOperationalRestrictionId = request.Id;
     }
     
-    if (request.State != null)
+    if (request.Status != null)
     {
-      originalRestriction.State = request.State.Value;
+      originalRestriction.Status = request.Status.Value;
     }
     if (request.StartDate != null)
     {

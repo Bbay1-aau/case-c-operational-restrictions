@@ -8,11 +8,6 @@ on:
       - development
       - 'feature/**'
   pull_request:
-    branches:
-      - main
-      - staging
-      - development
-      - 'feature/**'
 
 jobs:
   test:

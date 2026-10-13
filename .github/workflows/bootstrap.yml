@@ -76,13 +76,12 @@ jobs:
             # Create stack directory structure
             sudo mkdir -p /opt/stacks/traefik
             
-            # Create acme.json and set strict permissions required by Let's Encrypt
-            sudo touch /opt/stacks/traefik/acme.json
-            sudo chmod 600 /opt/stacks/traefik/acme.json
-
             # Take ownership of the stacks directory
             sudo chown -R $USER:$USER /opt/stacks
-
+            
+            # Create acme.json and set strict permissions required by Let's Encrypt
+            touch /opt/stacks/traefik/acme.json
+            chmod 600 /opt/stacks/traefik/acme.json
             cd /opt/stacks/traefik
 
             # Store ACME_EMAIL secret in .env for Docker Compose consumption

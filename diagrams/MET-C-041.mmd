@@ -46,7 +46,8 @@ class OperationalRestriction {
     StartDate : DateTime 
     EndDate : DateTime? 
     CreatedAt : DateTime 
-    ArchivedAt : DateTime? 
+    ArchivedAt : DateTime?
+    RententionUntil : DateTime?
     RestrictionDescription : string 
     Files : List~File~ 
     Version : int 
@@ -89,6 +90,15 @@ class OperationalRestrictionService {
     +assignOperator(Guid id, Guid operatorId) bool
     +getRestrictionById(Guid id) OperationalRestriction
     +getActiveRestrictions() List~OperationalRestriction~
+
+}
+
+class SignatureService {
+   <<Service>>
+    +assignSignee(Guid signatureId, Guide userId) bool
+    +signRestriction(Guid signatureId, Guid userId) bool
+    +getSignatureByRestriction(Guid restrictionId) List ~Signature~
+    +getPendingSignatures(Guid userId) List ~Signature~
 }
 
 %% =========================
@@ -150,4 +160,8 @@ UserService ..> User : uses
 User "1" --> "*" OperationalRestriction : originates
 OperationalRestrictionService ..> OperationalRestriction : uses
 
-OperationalRestriction "1" --> "*" Signature : contains
+OperationalRestriction "1" *-- "*" Signature : contains
+
+SignatureService ..> Signature
+SignatureService ..> User
+SignatureService ..> OperationalRestriction

@@ -15,11 +15,15 @@ We are designing the restriction form and notification screens for an internal M
 
 The notification screen must clearly and concisly communicate pending actions, so that the users are informed of any missed processes that need to be handeld. 
 
+
+
 To back design decision, we use the [10 Usability Heuristics for User Interface Design](`https://www.nngroup.com/articles/ten-usability-heuristics/`) from Nielsen Norman Group.
 
 ## Design Principles & Heuristics Applied
 
-* **Brand Identity:** Selected the orange color palette from the internal Metro service website (`metroservice.dk`) rather than the red used on the customer-facing site (`m.dk`), to avoid confusion with it being a public aplication.
+* **Brand Identity:** During stakeholder review, we discovered additional information about the brand identity and color palette. That said, as Metro changes owners, the original (`metroservice.dk`) orange color palette is unwanted; instead, a generic, widely used color palette is preferred for ease of changing once the new owners take over.
+
+* **Required Fields:** During stakeholder review, we discovered which fields were required for creation of the operational restriction like the description and which fields were optinal such as the end date of the restriciton, and implemented a red star on the required fields.
 
 * **Attachment system:** Added an additional attachment section inside the restriction form, to simplify referencing, and digitize any additional information that applies to a restriction.
 
@@ -38,4 +42,4 @@ To back design decision, we use the [10 Usability Heuristics for User Interface 
 
 ## Decision
 
-We will implement the restriction form and notification views using the Metro Service orange color palette, structured with standardized mobile UI components, category icons, and segmented filtering tabs to prioritize and highlight important items.
+We will implement the restriction form and notification views using a monochromatic color palette, structured with standardized mobile UI components, category icons, and segmented filtering tabs to prioritize and highlight important items.

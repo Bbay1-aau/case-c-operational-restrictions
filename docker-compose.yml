@@ -1,7 +1,7 @@
 services:
-  db:
-    image: postgres:16
-    container_name: metro-db
+  postgres:
+    image: postgres:17
+    container_name: metro
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-metro}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-metro_local_pw}

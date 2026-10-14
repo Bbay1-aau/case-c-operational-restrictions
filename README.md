@@ -154,7 +154,7 @@ fixtures/      synthetic test data. Never anything Metro supplied.
 
 ## Local database
 
-Postgres 16 runs in Docker. The backend creates the tables (EF Core
+Postgres 17 runs in Docker. The backend creates the tables (EF Core
 migrations) on startup in Development. Dummy data is inserted with a pnpm script.
 
 ### Start and seed

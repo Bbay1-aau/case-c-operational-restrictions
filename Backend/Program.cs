@@ -1,6 +1,8 @@
 using System.Text;
 
 using Backend.Configuration;
+using Backend.Data;
+using Backend.Lifecycle;
 using Backend.Services;
 using Backend.Services.Auth;
 
@@ -13,6 +15,17 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IExampleService, ExampleService>();
+
+// Register Lifecycle services
+builder.Services.AddScoped<RestrictionLifecycleService>();
+builder.Services.AddScoped<IOperationalRestrictionService, OperationalRestrictionService>();
+builder.Services.AddScoped<IOperationalRestrictionRepository, OperationalRestrictionRepository>();
+
+// Register Guards
+builder.Services.AddSingleton<IRestrictionGuard, CreationDataIsValidGuard>();
+
+// Register User Service
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.AddSingleton<PasswordHasher>();

@@ -1,52 +1,161 @@
+using Backend.Data;
+using Backend.Lifecycle;
+using Backend.Models.DTOs;
+using Backend.Models.Entities;
+using Backend.Models.Enums;
+
 namespace Backend.Services;
 
-public class OperationalRestrictionService : OperationalRestrictionService
+public interface IOperationalRestrictionService
 {
-    public CreateRestriction (data createRestrictionDto)
+    OperationalRestriction CreateRestriction(CreateRestrictionDto data);
+
+    OperationalRestriction EditRestriction(
+        Guid id,
+        CreateRestrictionDto updateRestrictionDto);
+
+    OperationalRestriction ApproveRestriction(
+        Guid id,
+        Guid approverId);
+
+    OperationalRestriction DenyRestriction(
+        Guid id,
+        Guid approverId,
+        string reason);
+
+    OperationalRestriction ArchiveRestriction(Guid id);
+
+    OperationalRestriction AssignOperator(
+        Guid id,
+        Guid operatorId);
+
+    OperationalRestriction? GetRestrictionById(Guid id);
+
+    List<OperationalRestriction> GetActiveRestrictions();
+}
+
+public class OperationalRestrictionService
+    : IOperationalRestrictionService
+{
+    private readonly RestrictionLifecycleService _lifecycleService;
+    private readonly IOperationalRestrictionRepository _repository;
+
+    public OperationalRestrictionService(
+        RestrictionLifecycleService lifecycleService,
+        IOperationalRestrictionRepository repository)
     {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
+        _lifecycleService = lifecycleService;
+        _repository = repository;
     }
 
-    public EditRestriction(Guid Id, data updateRestrictionDto)
+    public OperationalRestriction CreateRestriction(
+        CreateRestrictionDto data)
     {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
+        _lifecycleService.EnsureCanCreate(data);
+
+        var now = DateTime.UtcNow;
+
+        var restriction = new OperationalRestriction
+        {
+            RestrictionId = Guid.NewGuid(),
+            OriginatorUserId = data.OriginatorUserId,
+            RestrictionDescription = data.RestrictionDescription,
+            RestrictionState = State.Draft,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        _repository.Add(restriction);
+
+        return restriction;
     }
 
-    public ApproveRestriction(Guid Id, Guid approverId)
+    public OperationalRestriction EditRestriction(
+        Guid id,
+        CreateRestrictionDto updateRestrictionDto)
     {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
+        var restriction = GetRestrictionOrThrow(id);
+
+        // TODO: Validate that editing is allowed in the current state.
+        restriction.RestrictionDescription =
+            updateRestrictionDto.RestrictionDescription;
+
+        return SaveUpdate(restriction);
     }
 
-    public DenyRestriction(Guid Id, Guid approverId, string reason)
+    public OperationalRestriction ApproveRestriction(
+        Guid id,
+        Guid approverId)
     {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
+        var restriction = GetRestrictionOrThrow(id);
+
+        // TODO: Validate the approval transition and approver authorization.
+        restriction.RestrictionState = State.Approved;
+
+        return SaveUpdate(restriction);
     }
 
-    public ArchiveRestriction(Guid Id)
+    public OperationalRestriction DenyRestriction(
+        Guid id,
+        Guid approverId,
+        string reason)
     {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
+        var restriction = GetRestrictionOrThrow(id);
+
+        // TODO: Validate the denial transition and record the reason.
+        restriction.RestrictionState = State.CancelledRefused;
+
+        return SaveUpdate(restriction);
     }
 
-    public AssignOperator(Guid Id, Guid operatorId)
+    public OperationalRestriction ArchiveRestriction(Guid id)
     {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
-    }
-   
-   public GetRestrictionById(Guid Id)
-    {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
+        var restriction = GetRestrictionOrThrow(id);
+
+        // TODO: Validate that archiving is allowed in the current state.
+        restriction.RestrictionState = State.Archived;
+        restriction.ArchivedAt = DateTime.UtcNow;
+
+        return SaveUpdate(restriction);
     }
 
-     public List<OperationalRestriction> GetActiveRestrictions()
+    public OperationalRestriction AssignOperator(
+        Guid id,
+        Guid operatorId)
     {
-        Console.WriteLine("ExampleService: received request from frontend");
-        return true;
+        var restriction = GetRestrictionOrThrow(id);
+
+        // TODO: Validate operator assignment rules.
+        restriction.AssignedOperatorIds.Add(operatorId);
+
+        return SaveUpdate(restriction);
+    }
+
+    public OperationalRestriction? GetRestrictionById(Guid id)
+    {
+        return _repository.GetById(id);
+    }
+
+    public List<OperationalRestriction> GetActiveRestrictions()
+    {
+        return _repository.GetAll(
+            r => r.RestrictionState == State.Active);
+    }
+
+    private OperationalRestriction GetRestrictionOrThrow(Guid id)
+    {
+        return _repository.GetById(id)
+            ?? throw new InvalidOperationException(
+                $"Restriction with ID '{id}' was not found.");
+    }
+
+    private OperationalRestriction SaveUpdate(
+        OperationalRestriction restriction)
+    {
+        restriction.UpdatedAt = DateTime.UtcNow;
+
+        _repository.Update(restriction);
+
+        return restriction;
     }
 }

@@ -25,16 +25,16 @@ public class OperationalRestriction
 
     public List<File> Files { get; set; } = new List<File>();
 
-    public int Version { get; set; } = 0;
+    public int Version { get; set; }
 
     public Guid ReviewerId { get; set; }
 
-    public Boolean ApprovedForSigning { get; set; } = false;
+    public Boolean ApprovedForSigning { get; set; }
 
     public String ReviewDescription { get; set; } = string.Empty;
 
     public List<Guid> AssignedOperatorIds { get; set; } = new List<Guid>();
 
-    public DateTime UpdatedAt { get; set; } = DateTime.Empty;
+    public DateTime UpdatedAt { get; set; } = DateTime.MinValue;
 
 }

@@ -54,25 +54,50 @@ public class StateMachine
     // Functions for each state that checks the requirements needed to transition
     public bool ActiveStateRequirements(OperationalRestriction operationalRestriction)
     {
-        if (!operationalRestriction.SignatureSheet.OriginatorCancellation.Signed)
-            throw new InvalidOperationException("Originator cancellation signiture missing");
+
+        for (int i=0; i < SignatureSheet.Count; i++)
+        {
+            if (SignatureSheet[i].SigneeRole == ORIGINATOR && SignatureSheet[i].Type = CLOSURE)
+            {
+                if (!SignatureSheet[i].Signed)
+                    throw new InvalidOperationException("Originator cancellation signiture missing");
+                
+                break;
+            }
+        }
         
         return true;
     }
 
     public bool PendingCancellationStateRequirements(OperationalRestriction operationalRestriction)
     {
-        if (!operationalRestriction.SignatureSheet.DOMCancellation.Signed)
-            throw new InvalidOperationException("DOM cancellation approval signiture missing");
-        
+        for (int i=0; i < SignatureSheet.Count; i++)
+        {
+            if (SignatureSheet[i].SigneeRole == DUTY_OPERATIONS_MANAGER && SignatureSheet[i].Type = CLOSURE)
+            {
+                if (!SignatureSheet[i].Signed)
+                    throw new InvalidOperationException("DOM cancellation signiture missing");
+                
+                break;
+            }
+        }
+
         return true;
     }
 
     public bool CancellationApprovedStateRequirements(OperationalRestriction operationalRestriction)
     {
-        if (!operationalRestriction.SignatureSheet.CRSCancellation.Signed)
-            throw new InvalidOperationException("CRS cancellation signiture missing");
-        
+        for (int i=0; i < SignatureSheet.Count; i++)
+        {
+            if (SignatureSheet[i].SigneeRole == CONTROLROOM_SUPERVISOR && SignatureSheet[i].Type = CLOSURE)
+            {
+                if (!SignatureSheet[i].Signed)
+                    throw new InvalidOperationException("CRS cancellation signiture missing");
+                
+                break;
+            }
+        }
+
         return true;
     }
 
@@ -80,7 +105,7 @@ public class StateMachine
     {
         for (int i=0; i < SignatureSheet.Count; i++)
         {
-            if (SignatureSheet[i].Type = OperatorCancellation)
+            if (SignatureSheet[i].SigneeRole == OPERATOR && SignatureSheet[i].Type = CLOSURE)
             {
                 if (!SignatureSheet[i].Signed)
                     throw new InvalidOperationException("Operator cancellation signature missing");

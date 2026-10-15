@@ -1,13 +1,13 @@
 using System.Reflection;
-using Backend.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 using Backend.Configuration;
+using Backend.Data;
 using Backend.Services;
 using Backend.Services.Auth;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,8 +60,8 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         policy.WithOrigins(
-                  "http://localhost:5173",
-                  "http://127.0.0.1:5173"
+                "http://localhost:5173",
+                "http://127.0.0.1:5173"
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
@@ -95,7 +95,6 @@ app.MapGet("/api/hello", () => new
     timestamp = DateTime.UtcNow
 });
 
-
 // Apply EF migrations (Development only, and not while EF tools are running)
 if (app.Environment.IsDevelopment() &&
     Assembly.GetEntryAssembly()?.GetName().Name != "ef")
@@ -103,6 +102,5 @@ if (app.Environment.IsDevelopment() &&
     using var scope = app.Services.CreateScope();
     await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
 }
-
 
 app.Run();

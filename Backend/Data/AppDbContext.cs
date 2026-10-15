@@ -1,4 +1,5 @@
 using Backend.Models.Entities;
+
 using Microsoft.EntityFrameworkCore;
 namespace Backend.Data;
 
@@ -10,5 +11,5 @@ public class AppDbContext : DbContext
     {
     }
 
-     public DbSet<User> Users => Set<User>();
+    public DbSet<User> Users => Set<User>();
 }

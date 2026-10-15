@@ -184,17 +184,17 @@ pnpm db:seed
 ```
 
 ### Connect
-`Host=localhost;Port=5432;Database=metro_dev;Username=metro;Password=metro_local_pw`
+`Host=localhost;Port=5432;Database=metro;Username=metro;Password=metro_local_pw`
 
 Inspect the data:
 ```bash
-docker compose exec db psql -U metro -d metro_dev
-```
+docker compose exec postgress psql -U metro -d metro
+``` 
 
 ### Schema changes
 ```bash
 cd Backend
-Jwt__SigningKey=dev-only-key-at-least-32-characters-long dotnet ef migrations add MigrationName
+dotnet ef migrations add MigrationName
 ```
 Replace `MigrationName` with a short description of the change.
 The signing key is a dummy value needed because `Program.cs` requires it at startup.

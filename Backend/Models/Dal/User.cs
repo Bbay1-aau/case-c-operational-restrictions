@@ -1,9 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Backend.Models.Entities;
 
-public enum Role { Originator, Dom, Operator  }
+public enum Role { Originator, Dom, Operator }
 
-// MODEL - ENTITY (MVCS):
-// Represents database tables managed and mapped by EF Core to PostgreSQL
+[Index(nameof(Email), IsUnique = true)]
 public class User
 {
     public Guid Id { get; set; }

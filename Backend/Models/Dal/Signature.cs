@@ -7,8 +7,12 @@ namespace Backend.Models.Entities;
 public class Signature
 {
     public Guid SignatureId { get; set; }
-    public Guid UserId { get; set; }
     public SignatureType Type { get; set; }
-    public DateTime SignedAt { get; set; } = DateTime.Now;
-    public string Comment { get; set; } = string.Empty;
+    public bool Signed { get; set; }
+    public Guid SigneeId { get; set; }
+    public UserRole SigneeRole { get; set; }
+    public Guid RestrictionId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
+    
 }

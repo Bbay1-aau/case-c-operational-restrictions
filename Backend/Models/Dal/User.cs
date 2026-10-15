@@ -5,7 +5,7 @@ namespace Backend.Models.Entities;
 // Represents database tables managed and mapped by EF Core to PostgreSQL
 public class User
 {
-    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
 
     public string Name { get; set; } = string.Empty;
 
@@ -17,7 +17,7 @@ public class User
 
     public DateTime StartDate { get; set; } = DateTime.Now;
 
-    public DateTime EndDate { get; set; } = DateTime.Now;
+    public DateTime? EndDate { get; set; } = DateTime.Now;
 
     public UserStatus UserStatus { get; set; } = UserStatus.Empty;
 
@@ -25,6 +25,8 @@ public class User
 
     public Guid ReportsTo { get; set; } = Guid.Empty;
 
-    public DateTime DateCreated { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
 
 }

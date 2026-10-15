@@ -11,15 +11,17 @@ public class OperationalRestriction
 
     public List<Signature> SignatureSheet { get; set; } = new List<Signature>();
 
-    public State RestrictionState { get; set; } = State.Empty;
+    public RestrictionState State { get; set; } = RestrictionState.Empty;
 
     public DateTime StartDate { get; set; }= DateTime.Now;
 
-    public DateTime EndDate { get; set; }= DateTime.Now;
+    public DateTime? EndDate { get; set; }= DateTime.Now;
 
     public DateTime CreatedAt { get; set; }= DateTime.Now;
 
-    public DateTime ArchivedAt { get; set; }= DateTime.Now;
+    public DateTime? ArchivedAt { get; set; }= DateTime.Now;
+
+    public DateTime? RetentionUntil { get; set; }= DateTime.Now;
 
     public string RestrictionDescription { get; set; } = string.Empty;
 
@@ -33,8 +35,8 @@ public class OperationalRestriction
 
     public String ReviewDescription { get; set; } = string.Empty;
 
-    public List<Guid> AssignedOperatorIds { get; set; } = new List<Guid>();
+    public List<Guid> AssignedOperatorsIds { get; set; } = new List<Guid>();
 
-    public DateTime UpdatedAt { get; set; } = DateTime.MinValue;
+    public DateTime? UpdatedAt { get; set; } = DateTime.MinValue;
 
 }

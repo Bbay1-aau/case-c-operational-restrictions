@@ -1,6 +1,6 @@
 namespace Backend.Models.Enums;
 
-public enum State
+public enum RestrictionState
 {
     Draft,
     PendingDomApproval,

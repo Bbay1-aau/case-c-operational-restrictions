@@ -7,111 +7,125 @@ using Backend.Models.Entities;
 using Npgsql.Internal;
 
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
+
+using Microsoft.AspNetCore.Identity;
+using System.Reflection.Metadata;
 
 public class StateMachine
 {
     // Function to call if you wish to transition
-    public void Transition(OperationalRestriction operationalRestriction)
+    public void Transition(OperationalRestriction opRes)
     {
-        bool requirements = Require(operationalRestriction);
+        bool requirements = Require(opRes);
 
-        if (requirements)
+        // This should use "UpdateByIdRequest.cs"
+        if (requirements) 
         {
-            operationalRestriction.State = operationalRestriction.State switch
+            opRes.State = opRes.State switch
         {
             RestrictionState.ACTIVE          => RestrictionState.PENDING_CANCELLATION,
             RestrictionState.PENDING_CANCELLATION   => RestrictionState.CANCELLATION_APPROVED,
             RestrictionState.CANCELLATION_APPROVED       => RestrictionState.OUT_OF_FORCE,
             RestrictionState.OUT_OF_FORCE => RestrictionState.AWAITING_OPERATOR_SIGN_OUT,
             RestrictionState.AWAITING_OPERATOR_SIGN_OUT => RestrictionState.ARCHIVED,
-            _ => throw new InvalidOperationException($"No next state after {operationalRestriction.State}.")
+            _ => throw new InvalidOperationException($"No next state after {opRes.State}.")
         };
         }
     }
 
-    // calls the right requirement function and returns a bool
-    public bool Require(OperationalRestriction operationalRestriction)
+    // calls the right requirement function and returns a bool - These should call the audit trail
+    public bool Require(OperationalRestriction opRes)
     {
-        switch (operationalRestriction.State)
+        switch (opRes.State)
         {
             case RestrictionState.ACTIVE:
-                return ActiveStateRequirements(operationalRestriction);
+                return ActiveStateRequirements(opRes);
 
             case RestrictionState.PENDING_CANCELLATION:
-                return PendingCancellationStateRequirements(operationalRestriction);
+                return PendingCancellationStateRequirements(opRes);
 
             case RestrictionState.CANCELLATION_APPROVED:
-                return CancellationApprovedStateRequirements(operationalRestriction);
+                return CancellationApprovedStateRequirements(opRes);
 
             case RestrictionState.OUT_OF_FORCE:
-                return OutOfForceStateRequirements(operationalRestriction);
+                return OutOfForceStateRequirements(opRes);
 
             default:
                 throw new InvalidOperationException("No matching state requirements found");
         }
     }
 
+    public bool FindOneSignature(List<Signature> sheet, UserRole role, SignatureType type)
+    {
+        for (int i=0; i < sheet.Count; i++)
+        {
+            if (sheet[i].SigneeRole == role && sheet[i].Type == type)
+            {
+                if (!sheet[i].Signed)
+                    return false;
+                
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    public bool FindAllSignatures(List<Signature> sheet, UserRole role, SignatureType type)
+    {
+        for (int i=0; i < sheet.Count; i++)
+        {
+            if (sheet[i].SigneeRole == role && sheet[i].Type == type)
+            {
+                if (!sheet[i].Signed)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     // Functions for each state that checks the requirements needed to transition
-    public bool ActiveStateRequirements(OperationalRestriction operationalRestriction)
+    public bool ActiveStateRequirements(OperationalRestriction opRes)
     {
 
-        for (int i=0; i < SignatureSheet.Count; i++)
+        if (!FindOneSignature(opRes.SignatureSheet, UserRole.ORIGINATOR, SignatureType.CLOSURE))
         {
-            if (SignatureSheet[i].SigneeRole == ORIGINATOR && SignatureSheet[i].Type = CLOSURE)
-            {
-                if (!SignatureSheet[i].Signed)
-                    throw new InvalidOperationException("Originator cancellation signiture missing");
-                
-                break;
-            }
-        }
-        
-        return true;
-    }
-
-    public bool PendingCancellationStateRequirements(OperationalRestriction operationalRestriction)
-    {
-        for (int i=0; i < SignatureSheet.Count; i++)
-        {
-            if (SignatureSheet[i].SigneeRole == DUTY_OPERATIONS_MANAGER && SignatureSheet[i].Type = CLOSURE)
-            {
-                if (!SignatureSheet[i].Signed)
-                    throw new InvalidOperationException("DOM cancellation signiture missing");
-                
-                break;
-            }
+            throw new InvalidOperationException("Originator cancellation signiture missing");
         }
 
         return true;
     }
 
-    public bool CancellationApprovedStateRequirements(OperationalRestriction operationalRestriction)
+    public bool PendingCancellationStateRequirements(OperationalRestriction opRes)
     {
-        for (int i=0; i < SignatureSheet.Count; i++)
+        if (!FindOneSignature(opRes.SignatureSheet, UserRole.DUTY_OPERATIONS_MANAGER, SignatureType.CLOSURE))
         {
-            if (SignatureSheet[i].SigneeRole == CONTROLROOM_SUPERVISOR && SignatureSheet[i].Type = CLOSURE)
-            {
-                if (!SignatureSheet[i].Signed)
-                    throw new InvalidOperationException("CRS cancellation signiture missing");
-                
-                break;
-            }
+            throw new InvalidOperationException("DOM cancellation signiture missing");
         }
 
         return true;
     }
 
-    public bool OutOfForceStateRequirements(OperationalRestriction operationalRestriction)
+    public bool CancellationApprovedStateRequirements(OperationalRestriction opRes)
     {
-        for (int i=0; i < SignatureSheet.Count; i++)
+        if (!FindOneSignature(opRes.SignatureSheet, UserRole.CONTROLROOM_SUPERVISOR, SignatureType.CLOSURE))
         {
-            if (SignatureSheet[i].SigneeRole == OPERATOR && SignatureSheet[i].Type = CLOSURE)
-            {
-                if (!SignatureSheet[i].Signed)
-                    throw new InvalidOperationException("Operator cancellation signature missing");
-            }
+            throw new InvalidOperationException("CRS cancellation signiture missing");
         }
 
+        return true;
+    }
+
+    public bool OutOfForceStateRequirements(OperationalRestriction opRes)
+    {
+
+    if (!FindAllSignatures(opRes.SignatureSheet, UserRole.OPERATOR, SignatureType.CLOSURE))
+        {
+            throw new InvalidOperationException("Originator cancellation signiture missing");
+        }
+    
         return true;
 
     }

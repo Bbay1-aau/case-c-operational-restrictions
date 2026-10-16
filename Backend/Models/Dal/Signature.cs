@@ -8,7 +8,7 @@ public class Signature
 {
     public Guid SignatureId { get; set; }
     public SignatureType Type { get; set; }
-    public bool Signed { get; set; }
+    public bool IsSigned { get; set; }
     public Guid SigneeId { get; set; }
     public UserRole SigneeRole { get; set; }
     public Guid RestrictionId { get; set; }

@@ -9,8 +9,8 @@ public enum RestrictionAction
 
 public sealed record RestrictionTransition(
     RestrictionAction Action,
-    State? From,
-    State To,
+    RestrictionState? From,
+    RestrictionState To,
     IReadOnlyList<string> Guards);
 
 public static class RestrictionLifecycle
@@ -23,7 +23,7 @@ public static class RestrictionLifecycle
             [RestrictionAction.CreateDraft] = new(
                 RestrictionAction.CreateDraft,
                 From: null,
-                To: State.Draft,
+                To: RestrictionState.Draft,
                 Guards: new[]
                 {
                     "CreationDataIsValid"

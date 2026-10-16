@@ -9,7 +9,7 @@ public class OperationalRestrictionDto
 {
     public Guid RestrictionId { get; set; }
 
-    public State RestrictionState { get; set; } = State.Empty;
+    public RestrictionState State { get; set; } = RestrictionState.Empty;
 
     public String RestrionDescription { get; set; } = string.Empty;
 }

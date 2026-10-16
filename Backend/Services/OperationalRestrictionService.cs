@@ -61,7 +61,7 @@ public class OperationalRestrictionService
             RestrictionId = Guid.NewGuid(),
             OriginatorUserId = data.OriginatorUserId,
             RestrictionDescription = data.RestrictionDescription,
-            RestrictionState = State.Draft,
+            State = RestrictionState.Draft,
             CreatedAt = now,
             UpdatedAt = now
         };
@@ -91,7 +91,7 @@ public class OperationalRestrictionService
         var restriction = GetRestrictionOrThrow(id);
 
         // TODO: Validate the approval transition and approver authorization.
-        restriction.RestrictionState = State.Approved;
+        restriction.State = RestrictionState.Approved;
 
         return SaveUpdate(restriction);
     }
@@ -104,7 +104,7 @@ public class OperationalRestrictionService
         var restriction = GetRestrictionOrThrow(id);
 
         // TODO: Validate the denial transition and record the reason.
-        restriction.RestrictionState = State.CancelledRefused;
+        restriction.State = RestrictionState.CancelledRefused;
 
         return SaveUpdate(restriction);
     }
@@ -114,7 +114,7 @@ public class OperationalRestrictionService
         var restriction = GetRestrictionOrThrow(id);
 
         // TODO: Validate that archiving is allowed in the current state.
-        restriction.RestrictionState = State.Archived;
+        restriction.State = RestrictionState.Archived;
         restriction.ArchivedAt = DateTime.UtcNow;
 
         return SaveUpdate(restriction);
@@ -127,7 +127,7 @@ public class OperationalRestrictionService
         var restriction = GetRestrictionOrThrow(id);
 
         // TODO: Validate operator assignment rules.
-        restriction.AssignedOperatorIds.Add(operatorId);
+        restriction.AssignedOperatorsIds.Add(operatorId);
 
         return SaveUpdate(restriction);
     }
@@ -140,7 +140,7 @@ public class OperationalRestrictionService
     public List<OperationalRestriction> GetActiveRestrictions()
     {
         return _repository.GetAll(
-            r => r.RestrictionState == State.Active);
+            r => r.State == RestrictionState.Active);
     }
 
     private OperationalRestriction GetRestrictionOrThrow(Guid id)

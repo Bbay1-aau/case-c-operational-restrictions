@@ -5,7 +5,7 @@ namespace Backend.Lifecycle;
 
 public sealed class RestrictionLifecycleService
 {
-    private readonly IReadOnlyDictionary<string, IRestrictionGuard> _guards;
+    private readonly Dictionary<string, IRestrictionGuard> _guards;
 
     public RestrictionLifecycleService(
         IEnumerable<IRestrictionGuard> guards)

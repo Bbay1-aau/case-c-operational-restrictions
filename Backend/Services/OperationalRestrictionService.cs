@@ -6,6 +6,7 @@ using Backend.Models.Enums;
 
 namespace Backend.Services;
 
+//TODO: This interface should be seperated from the class
 public interface IOperationalRestrictionService
 {
     OperationalRestriction CreateRestriction(CreateRestrictionDto data);

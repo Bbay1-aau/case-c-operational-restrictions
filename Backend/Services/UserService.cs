@@ -2,44 +2,38 @@ using Backend.Models.Entities;
 
 namespace Backend.Services;
 
+//TODO: This interface should be seperated into its own file
 public interface IUserService
 {
-    User? Login(string Email, string PasswordHash);
-    void Logout();
-    User CreateUser(User userData);
-    void DeactivateUser(Guid Id);
-    User? GetUserById(Guid Id);
+    LoginResponseDto Login(string Email, string PasswordHash);
+    bool Logout();
+    UserDto CreateUser(CreateUserDto userData);
+    User DeactivateUser(Guid userId);
     List<User> GetActiveUsers();
 }
 
 public class UserService : IUserService
 {
-    public User? Login(string Email, string PasswordHash)
+    public LoginResponseDto Login(string Email, string PasswordHash)
     {
         Console.WriteLine("UserService: Login request received");
         return null; // TODO: implement
     }
 
-    public void Logout()
+    public bool Logout()
     {
         Console.WriteLine("UserService: Logout request received");
     }
 
-    public User CreateUser(User userData)
+    public UserDto CreateUser(CreateUserDto userData)
     {
         Console.WriteLine("UserService: CreateUser request received");
         return userData; // TODO: implement
     }
 
-    public void DeactivateUser(Guid Id)
+    public User DeactivateUser(Guid userId)
     {
         Console.WriteLine("UserService: DeactivateUser request received");
-    }
-
-    public User? GetUserById(Guid Id)
-    {
-        Console.WriteLine("UserService: GetUserById request received");
-        return null; // TODO: implement
     }
 
     public List<User> GetActiveUsers()
